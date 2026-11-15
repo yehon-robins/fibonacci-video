@@ -7,3 +7,8 @@ dist
 out
 models/
 .chrome-libs/
+
+# Locally installed agent skills
+.agents/
+.claude/
+skills-lock.json
