@@ -20,7 +20,7 @@ VOICES = ROOT / "models" / "voices-v1.0.bin"
 OUTPUT = ROOT / "public" / "narration.wav"
 
 TEXT = "The Fibonacci sequence generates the Golden Spiral"
-VOICE = "af_heart"
+VOICE = "am_adam"  # male US English voice
 TARGET_SECONDS = 5.0
 LEAD_IN_SECONDS = 0.5  # small pause so the title appears before the voice starts
 
