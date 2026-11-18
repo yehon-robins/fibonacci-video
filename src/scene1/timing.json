@@ -1,0 +1,26 @@
+[
+  {
+    "file": "scene1/beat1.wav",
+    "seconds": 1.941
+  },
+  {
+    "file": "scene1/beat2.wav",
+    "seconds": 2.325
+  },
+  {
+    "file": "scene1/beat3.wav",
+    "seconds": 5.568
+  },
+  {
+    "file": "scene1/beat4.wav",
+    "seconds": 4.203
+  },
+  {
+    "file": "scene1/beat5.wav",
+    "seconds": 3.072
+  },
+  {
+    "file": "scene1/beat6.wav",
+    "seconds": 3.179
+  }
+]
