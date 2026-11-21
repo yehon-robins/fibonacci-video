@@ -466,7 +466,8 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 #### Beat 4A.1 — Flowers with Fibonacci petals
 
 **Visual:**
-- The Scene 1 row returns small along the bottom: `1  1  2  3  5  8  13  21  34  …`
+- Lead-in (~1 s, before the narration starts): the title fades in with a small muted subtitle, *"from numbers to nature"*, and five closed buds appear. This marks the change of chapter from maths to nature.
+- The Scene 1 row returns small along the bottom on "a Fibonacci number": `1  1  2  3  5  8  13  21  34  …`
 - Simple stylised flowers bloom one at a time across the screen, petals opening one by one with a counter on each:
   - **3** petals (lily / iris)
   - **5** petals (buttercup / wild rose)
@@ -494,8 +495,8 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 **Visual:**
 - An empty centre point. Seeds (small amber dots) appear one at a time. Each new seed is placed at the centre, the pattern turns by a fixed angle, and older seeds drift outward.
-- An angle arc labelled **137.5°** shows the turn between two consecutive seeds.
-- The process speeds up until ~600 seeds fill a full sunflower head.
+- From "a fixed turn" on, a ray sweeps from the previous seed's direction to the new one and an amber arc (drawn outside the seeds) traces the turn. On "137.5 degrees", a fixed label **137.5°** *(turn between seeds)* appears beside the flower and stays there.
+- After the narration, the process speeds up (~2.3 s, easing in and out) until ~600 seeds fill a full sunflower head, which holds for a moment.
 
 **Narration:**
 > A sunflower grows its seeds from the centre outward. Each new seed appears at a fixed turn from the last one: about one hundred thirty-seven and a half degrees.
@@ -516,7 +517,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 #### Beat 4B.3 — The spirals count Fibonacci numbers
 
 **Visual:**
-- Back on the full sunflower: the seeds that form clockwise spirals are highlighted in one colour and counted (**34**), then the counter-clockwise spirals in another colour (**55**).
+- Back on the full sunflower: from "look at the spirals", the seeds that form clockwise spirals are highlighted in one colour and counted (**34**), then the counter-clockwise spirals in another colour (**55**). Each count lands as its number is spoken. Then both families show together.
 - **34** and **55** fly down into the Fibonacci row, landing next to each other.
 - Small side note: the same pattern shows in pinecones (8 and 13) and pineapples (8, 13 and 21).
 
@@ -531,7 +532,8 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 **Visual:**
 - Squares are tiled one at a time, each placed against the growing rectangle: sides **1, 1, 2, 3, 5, 8, 13, 21**, each labelled with its side length.
-- After each new square, the rectangle's side ratio is shown briefly: 2/1, 3/2, 5/3, 8/5, … → **φ**
+- After each new square, the rectangle's side ratio is added to a list: 2/1, 3/2, 5/3, 8/5, … On "closer and closer" the values light up top to bottom, then **→ φ** appears on "golden ratio".
+- The camera zooms out a little ahead of each new square, by a steady factor per square, so nothing is clipped.
 
 **Narration:**
 > Now take squares whose sides are Fibonacci numbers and fit them together. Each new square makes a bigger rectangle, and its shape gets closer and closer to the golden ratio.
