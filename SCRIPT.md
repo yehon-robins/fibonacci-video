@@ -549,7 +549,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 ---
 
-### Part 4D — The golden ratio and beauty (~12 s)
+### Part 4D — The golden ratio and beauty (~19 s)
 
 #### Beat 4D.1 — The golden rectangle
 
@@ -557,13 +557,15 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 - A golden rectangle (sides 1 : φ) is drawn and labelled.
 - Small outline icons fade in around it: a classical temple façade, a painting frame, a modern card shape. These are generic icons, not copies of specific works.
 - A caption reads: *"pleasing proportions?"*
+- On "Scientists still debate", the icons dim and a note appears: *"still debated: studies give mixed results"*.
+- On "a number that turns up everywhere", the rectangle glows and **φ ≈ 1.618…** appears inside it.
 
 **Narration:**
 > For centuries, artists and architects have treated the golden rectangle as the most pleasing shape, and some say it hides in famous buildings and paintings. Scientists still debate how much of that is true. But it's easy to see why people love the idea of a number that turns up everywhere.
 
 ---
 
-### Part 4E — Closing (~10 s)
+### Part 4E — Closing (~17 s)
 
 #### Beat 4E.1 — The full journey
 

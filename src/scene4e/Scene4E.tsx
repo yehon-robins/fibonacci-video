@@ -1,11 +1,11 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, clamp, F, Frac, Line, makeBeats, Op, Phi, Psi, Root, Stage, Sup } from "../shared/kit";
+import { C, clamp, F, FPS, Frac, Line, makeBeats, Op, Phi, Psi, Root, Stage, Sup } from "../shared/kit";
 import { SPIRAL_EYE, SpiralPath, Sunflower } from "../shared/nature";
 import timing from "./timing.json";
 
 // A longer tail, so the spiral can keep turning before the fade to black.
-const T = makeBeats(timing, 1.3, 4.5);
+const T = makeBeats(timing, 1.3, 5);
 export const SCENE4E_DURATION = T.duration;
 
 const ITEM_Y = 300;
@@ -27,19 +27,34 @@ export const Scene4E: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const { S, cue } = T;
+  // Seconds into the narration, matched to the words each item illustrates.
+  const at = (sec: number) => S[0] + Math.round(sec * FPS);
+  const t = {
+    arrow1: at(3.95), // "comes the golden ratio"
+    phi: at(4.25),
+    arrow2: at(5.9), // "and from the golden ratio,"
+    flower: at(6.4), // "the patterns in a sunflower"
+    spiral: at(6.9),
+    formula: at(7.6), // in the pause before "One little sequence"
+    fade: at(9.9), // "all the way to nature"
+    centre: at(10.3),
+  };
 
-  const flowerIn = interpolate(frame, [cue(0, 0.5), cue(0, 0.5) + 20], [0, 1], clamp);
-  const spiralDraw = interpolate(frame, [cue(0, 0.56), cue(0, 0.78)], [0, 1], clamp);
-  const others = interpolate(frame, [cue(0, 0.86), cue(0, 0.86) + 25], [1, 0], clamp);
-  const toCentre = spring({ frame: frame - cue(0, 0.9), fps, config: { damping: 200 }, durationInFrames: 45 });
-  const turn = Math.max(0, frame - cue(0, 0.56)) * 0.35; // degrees, keeps turning slowly
-  const black = interpolate(frame, [durationInFrames - 35, durationInFrames - 5], [0, 1], clamp);
+  const flowerIn = interpolate(frame, [t.flower, t.flower + 20], [0, 1], clamp);
+  const spiralDraw = interpolate(frame, [t.spiral, at(8.7)], [0, 1], clamp);
+  const others = interpolate(frame, [t.fade, t.fade + 25], [1, 0], clamp);
+  const toCentre = spring({ frame: frame - t.centre, fps, config: { damping: 200 }, durationInFrames: 50 });
+  const turn = Math.max(0, frame - t.spiral) * 0.35; // degrees, keeps turning slowly
+  // A slow, final fade to black, ending a few frames before the last frame.
+  const black = interpolate(frame, [durationInFrames - 50, durationInFrames - 8], [0, 1], clamp);
 
-  const cx = interpolate(toCentre, [0, 1], [FLOWER.x, 640]);
-  const cy = interpolate(toCentre, [0, 1], [FLOWER.y, 335]);
-  // The spiral reaches ~165px from its eye at scale 1, so 1.4 keeps it clear of
-  // the title and the closing line while it turns.
-  const scale = interpolate(toCentre, [0, 1], [1, 1.4]);
+  // The spiral turns about its eye, but its body sits to the left of the eye, so
+  // the eye goes a little right of centre to balance the shape on screen.
+  const cx = interpolate(toCentre, [0, 1], [FLOWER.x, 690]);
+  const cy = interpolate(toCentre, [0, 1], [FLOWER.y, 345]);
+  // The spiral reaches ~170px from its eye at scale 1, so 1.25 keeps it clear of
+  // the title and the closing line whichever way it has turned.
+  const scale = interpolate(toCentre, [0, 1], [1, 1.25]);
   const toScreen = (p: { x: number; y: number }) => ({
     x: (p.x - SPIRAL_EYE.x) * UNIT,
     y: (p.y - SPIRAL_EYE.y) * UNIT,
@@ -51,15 +66,15 @@ export const Scene4E: React.FC = () => {
         <Line at={S[0]} x={190} y={ITEM_Y} size={34}>
           1, 1, 2, 3, 5, 8, …
         </Line>
-        <Line at={cue(0, 0.27)} x={625} y={ITEM_Y} size={44}>
+        <Line at={t.phi} x={625} y={ITEM_Y} size={44}>
           <Phi /> <Op>=</Op> <Frac n={<span>1 + <Root>5</Root></span>} d="2" />
         </Line>
         <svg width={1280} height={720} style={{ position: "absolute", left: 0, top: 0 }}>
-          <Arrow x={420} at={cue(0, 0.22)} />
-          <Arrow x={830} at={cue(0, 0.46)} />
+          <Arrow x={420} at={t.arrow1} />
+          <Arrow x={830} at={t.arrow2} />
           <Sunflower count={420} cx={FLOWER.x} cy={FLOWER.y} radius={FLOWER.r} opacity={flowerIn * 0.75} />
         </svg>
-        <Line at={cue(0, 0.62)} y={490} size={40} color={C.muted} style={{ opacity: 0.7 }}>
+        <Line at={t.formula} y={490} size={40} color={C.muted} style={{ opacity: 0.7 }}>
           <F s="n" /> <Op>=</Op>{" "}
           <Frac
             n={
@@ -81,7 +96,7 @@ export const Scene4E: React.FC = () => {
         </g>
       </svg>
 
-      <Line at={cue(0, 1) + 15} y={640} size={48} color={C.amber}>
+      <Line at={cue(0, 1) + 12} y={625} size={48} color={C.amber}>
         Thanks for watching!
       </Line>
 
