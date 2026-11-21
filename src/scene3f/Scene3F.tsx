@@ -1,9 +1,10 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { Boxed, C, clamp, F, Frac, Line, makeBeats, MiniChart, Op, Phi, Psi, Root, Stage, Strike, Sup } from "../shared/kit";
+import { Annot, Boxed, C, clamp, F, Frac, Line, makeBeats, MiniChart, Op, Phi, Psi, Root, Stage, Sup } from "../shared/kit";
 import timing from "./timing.json";
 
-const T = makeBeats(timing);
+// Slightly tighter gaps between beats; a full 2 s hold on the final result.
+const T = makeBeats(timing, 1.1, 2);
 export const SCENE3F_DURATION = T.duration;
 
 const PhiN: React.FC<{ e?: string }> = ({ e = "n" }) => (
@@ -32,23 +33,38 @@ const Binet: React.FC = () => (
   </span>
 );
 
-// Beat 2: the row of Fibonacci numbers with an empty F₁₀ slot that 55 flies into.
+// Beat 2: the row of Fibonacci numbers with an empty F₁₀ slot. The 55 stays
+// at the end of the equation and a copy flies down into the slot.
 const SLOT_X = (j: number) => 165 + j * 105;
 const SLOT_Y = 600;
+const ANSWER_X = 920;
+const ANSWER_Y = 400;
 const RowWith55: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { B, cue } = T;
   const values = ["1", "1", "2", "3", "5", "8", "13", "21", "34", ""];
-  const o =
-    interpolate(frame, [cue(1, 0.55), cue(1, 0.55) + 12], [0, 1], clamp) *
-    interpolate(frame, [B[2], B[2] + 12], [1, 0], clamp);
-  const appear = cue(1, 0.6);
-  const fly = spring({ frame: frame - cue(1, 0.78), fps, config: { damping: 200 }, durationInFrames: 25 });
+  const out = interpolate(frame, [B[2], B[2] + 12], [1, 0], clamp);
+  const o = interpolate(frame, [cue(1, 0.6), cue(1, 0.6) + 12], [0, 1], clamp) * out;
+  const appear = cue(1, 0.58);
+  const flyAt = cue(1, 0.7);
+  const fly = spring({ frame: frame - flyAt, fps, config: { damping: 200 }, durationInFrames: 25 });
   const pop = spring({ frame: frame - appear, fps, config: { damping: 12, stiffness: 160 } });
-  const x = interpolate(fly, [0, 1], [985, SLOT_X(9)]);
-  const y = interpolate(fly, [0, 1], [400, SLOT_Y]);
-  const size = interpolate(fly, [0, 1], [64, 40]);
+  const fifty5 = (x: number, y: number, size: number, scale: number) => (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        transform: `translate(-50%, -50%) scale(${scale})`,
+        fontSize: size,
+        color: C.amber,
+        opacity: out,
+      }}
+    >
+      55
+    </div>
+  );
   return (
     <>
       <div style={{ opacity: o }}>
@@ -70,27 +86,21 @@ const RowWith55: React.FC = () => {
             }}
           >
             {v}
-            <div style={{ position: "absolute", top: 72, fontSize: 22, color: C.muted }}>
+            <div style={{ position: "absolute", top: 70, fontSize: 28, color: C.muted }}>
               <F s={j + 1} />
             </div>
           </div>
         ))}
       </div>
-      {frame >= appear && frame < B[2] + 12 ? (
-        <div
-          style={{
-            position: "absolute",
-            left: x,
-            top: y,
-            transform: `translate(-50%, -50%) scale(${pop})`,
-            fontSize: size,
-            color: C.amber,
-            opacity: interpolate(frame, [B[2], B[2] + 12], [1, 0], clamp),
-          }}
-        >
-          55
-        </div>
-      ) : null}
+      {frame >= appear ? fifty5(ANSWER_X, ANSWER_Y, 64, pop) : null}
+      {frame >= flyAt
+        ? fifty5(
+            interpolate(fly, [0, 1], [ANSWER_X, SLOT_X(9)]),
+            interpolate(fly, [0, 1], [ANSWER_Y, SLOT_Y]),
+            interpolate(fly, [0, 1], [64, 40]),
+            1,
+          )
+        : null}
     </>
   );
 };
@@ -104,6 +114,8 @@ const PsiLine: React.FC = () => {
   const nx = (v: number) => 640 + v * 400;
   const y = 430;
   const o = interpolate(frame, [S[2], S[2] + 12], [0, 1], clamp) * interpolate(frame, [B[3], B[3] + 12], [1, 0], clamp);
+  // ψ⁰ … ψ⁷ land one by one while the narration says "its powers shrink toward zero".
+  const dotAt = (n: number) => cue(2, 0.12 + n * 0.048);
   return (
     <svg width={1280} height={720} style={{ position: "absolute", left: 0, top: 0, opacity: o }}>
       <line x1={nx(-1.1)} x2={nx(1.1)} y1={y} y2={y} stroke={C.muted} strokeWidth={3} />
@@ -111,16 +123,16 @@ const PsiLine: React.FC = () => {
         <g key={v}>
           <line x1={nx(v)} x2={nx(v)} y1={y - 12} y2={y + 12} stroke={C.muted} strokeWidth={3} />
           <text x={nx(v)} y={y + 48} textAnchor="middle" fontFamily="Georgia, serif" fontSize={28} fill={v === 0 ? C.amber : C.muted}>
-            {v}
+            {v < 0 ? `−${-v}` : v}
           </text>
         </g>
       ))}
       {Array.from({ length: 8 }, (_, n) => {
-        const at = cue(2, 0.05 + n * 0.06);
+        const at = dotAt(n);
         const p = spring({ frame: frame - at, fps, config: { damping: 12, stiffness: 160 } });
         if (frame < at) return null;
         const v = PSI ** n;
-        const latest = n === Math.min(7, Math.floor((frame - cue(2, 0.05)) / (cue(2, 0.11) - cue(2, 0.05))));
+        const latest = n === 7 || frame < dotAt(n + 1);
         return (
           <g key={n}>
             <circle cx={nx(v)} cy={y} r={11 * p} fill={C.blue} opacity={latest ? 1 : 0.45} />
@@ -145,6 +157,13 @@ const PsiLine: React.FC = () => {
   );
 };
 
+// A ψ term that dims as n grows, with a small blue "→ 0" note above or below it.
+const Vanishing: React.FC<{ p: number; above?: boolean; children: React.ReactNode }> = ({ p, above, children }) => (
+  <Annot note={<span>→ 0</span>} show={p} above={above} color={C.blue} size="0.55em">
+    <span style={{ opacity: 1 - 0.65 * p }}>{children}</span>
+  </Annot>
+);
+
 export const Scene3F: React.FC = () => {
   const { S, B, cue } = T;
   const frame = useCurrentFrame();
@@ -158,12 +177,12 @@ export const Scene3F: React.FC = () => {
         <F s="n" /> <Op>=</Op> <Frac n="1" d={<Root>5</Root>} />·<PhiN /> <Op>−</Op>{" "}
         <Frac n="1" d={<Root>5</Root>} />·<PsiN />
       </Line>
-      <Line at={cue(0, 0.45)} out={B[3]} y={420} size={84} moveAt={B[1]} toY={165} toSize={46}>
-        <Boxed show={show(cue(0, 0.5))} glow>
+      <Line at={cue(0, 0.4)} out={B[3]} y={420} size={84} moveAt={B[1]} toY={165} toSize={46}>
+        <Boxed show={show(cue(0, 0.45))} glow>
           <Binet />
         </Boxed>
       </Line>
-      <Line at={cue(0, 0.8)} out={B[1]} y={560} size={40} color={C.amber}>
+      <Line at={cue(0, 0.84)} out={B[1]} y={560} size={40} color={C.amber}>
         Binet's Formula
       </Line>
 
@@ -171,11 +190,11 @@ export const Scene3F: React.FC = () => {
       <Line at={cue(1, 0.1)} out={B[2]} y={275} size={40}>
         <span style={{ color: C.muted }}>n = 10: &nbsp;</span>
         <PhiN e="10" /> ≈ 122.992
-        <span style={{ opacity: show(cue(1, 0.3)) }}>
+        <span style={{ opacity: show(cue(1, 0.36)) }}>
           , &nbsp; <PsiN e="10" /> ≈ 0.008
         </span>
       </Line>
-      <Line at={cue(1, 0.45)} out={B[2]} y={400} x={560} size={50}>
+      <Line at={cue(1, 0.48)} out={B[2]} y={400} x={560} size={50}>
         <F s="10" /> <Op>=</Op> <Frac n="122.992 − 0.008" d={<Root>5</Root>} /> <Op>=</Op>
       </Line>
       <RowWith55 />
@@ -185,39 +204,55 @@ export const Scene3F: React.FC = () => {
         |<Psi />| ≈ 0.618 &lt; 1 <Op>⇒</Op> <PsiN /> → 0
       </Line>
       <PsiLine />
-      <Line at={cue(2, 0.65)} out={B[3]} y={590} size={50}>
+      <Line at={cue(2, 0.62)} out={B[3]} y={590} size={50}>
         <Boxed show={1}>
           <F s="n" /> <Op>≈</Op> <Frac n={<PhiN />} d={<Root>5</Root>} />
         </Boxed>
       </Line>
 
-      {/* Beat 4: the ratio, proved */}
-      <Line at={S[3]} y={220} size={50}>
+      {/* Beat 4: the ratio, proved. The chart ("what we saw before") comes
+          first; the ψ terms then dim with a small "→ 0" note rather than a
+          strike line, which kept colliding with the superscripts. */}
+      <div style={{ position: "absolute", left: 770, top: 465, opacity: show(S[3]) }}>
+        <MiniChart
+          at={S[3] + 6}
+          width={380}
+          height={170}
+          caption={
+            <span>
+              <F s="n+1" /> / <F s="n" />
+            </span>
+          }
+          check={show(cue(3, 0.86))}
+        />
+      </div>
+      <Line at={cue(3, 0.16)} y={235} size={60}>
         <Frac n={<F s="n+1" />} d={<F s="n" />} /> <Op>=</Op>{" "}
         <Frac
           n={
             <span>
-              <PhiN e="n+1" /> − <Strike p={vanish} color={C.blue}><span style={{ opacity: 1 - 0.6 * vanish }}><PsiN e="n+1" /></span></Strike>
+              <PhiN e="n+1" /> − <Vanishing p={vanish} above>
+                <PsiN e="n+1" />
+              </Vanishing>
             </span>
           }
           d={
             <span>
-              <PhiN /> − <Strike p={vanish} color={C.blue}><span style={{ opacity: 1 - 0.6 * vanish }}><PsiN /></span></Strike>
+              <PhiN /> − <Vanishing p={vanish}>
+                <PsiN />
+              </Vanishing>
             </span>
           }
         />
       </Line>
-      <Line at={cue(3, 0.42)} y={360} size={50}>
+      <Line at={cue(3, 0.42)} y={385} size={56}>
         <Op>→</Op> <Frac n={<PhiN e="n+1" />} d={<PhiN />} /> <Op>=</Op> <Phi />
       </Line>
-      <Line at={cue(3, 0.62)} y={530} x={380} size={60}>
-        <Boxed show={show(cue(3, 0.65))} glow>
+      <Line at={cue(3, 0.66)} y={555} x={390} size={64}>
+        <Boxed show={show(cue(3, 0.68))} glow>
           <Frac n={<F s="n+1" />} d={<F s="n" />} /> <Op>→</Op> <Phi />
         </Boxed>
       </Line>
-      <div style={{ position: "absolute", left: 760, top: 440, opacity: show(cue(3, 0.6)) }}>
-        <MiniChart at={cue(3, 0.6)} width={380} height={170} check={show(cue(3, 0.78))} />
-      </div>
     </Stage>
   );
 };

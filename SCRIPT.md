@@ -308,8 +308,8 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 - Two rows of values:
   - φⁿ:  1,  1.618,  2.618,  4.236,  6.854, …
   - ψⁿ:  1,  −0.618,  0.382,  −0.236,  0.146, …
-- Quick arcs show that each row obeys the rule (e.g. 1.618 + 2.618 = 4.236).
-- A red "≠" appears next to the real sequence 0, 1, 1, 2, 3, …
+- Three neighbouring cells in each row are boxed to show that each row obeys the rule (e.g. 1.618 + 2.618 = 4.236).
+- A red "≠" appears next to the real sequence 0, 1, 1, 2, 3, …, then the note "not even whole numbers".
 
 **Narration:**
 > So phi to the n and psi to the n both follow the Fibonacci rule, but neither one is the Fibonacci sequence. Their values aren't even whole numbers.
@@ -319,7 +319,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 **Visual:**
 - The general form appears: **Fₙ = A·φⁿ + B·ψⁿ**
 - A and B are shown as two amber "knobs" (sliders).
-- A short demonstration: adding the rule for φⁿ (scaled by A) to the rule for ψⁿ (scaled by B) gives the rule for the mix, so the mix obeys it too.
+- A short demonstration: adding the rule for φⁿ (scaled by A) to the rule for ψⁿ (scaled by B), stacked with their "=" signs aligned, gives the rule for the mix, so the mix obeys it too.
 
 **Narration:**
 > But the rule only adds terms together. So if we scale each sequence by any number and add them, the result still follows the rule. That gives us two knobs, A and B, to tune.
@@ -327,7 +327,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 #### Beat 3D.3 — Why two knobs are enough
 
 **Visual:**
-- The first two slots of the row light up. Then a cascade of arrows shows every later term being forced from them.
+- The first two slots of the row light up ("fixed") and the knobs settle. Then a cascade of arrows shows every later term being forced from them.
 
 **Narration:**
 > And two knobs are exactly what we need. Once the first two terms are fixed, the rule decides every term after them. So if we match the first two, we match the whole sequence.
@@ -392,7 +392,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 **Visual:**
 - Substitute n = 10:  **φ¹⁰ ≈ 122.992**,  **ψ¹⁰ ≈ 0.008**
-- **(122.992 − 0.008) / √5 = 55**. The **55** flies back to its place, F₁₀, in the Scene 1 row.
+- **(122.992 − 0.008) / √5 = 55**. The **55** stays in the equation while a copy flies to its place, F₁₀, in the Scene 1 row.
 
 **Narration:**
 > Let's test it. For n equals ten, phi to the tenth is about one hundred twenty-three, psi to the tenth is tiny, and the formula gives exactly fifty-five, the tenth Fibonacci number. Irrational numbers in, whole numbers out.
@@ -409,9 +409,10 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 #### Beat 3F.4 — 🔗 The ratio, proved
 
 **Visual:**
+- The Scene 2 chart draws in (bottom right) on "what we saw before".
 - **Fₙ₊₁ / Fₙ = (φⁿ⁺¹ − ψⁿ⁺¹) / (φⁿ − ψⁿ)**
-- The ψ terms fade toward zero as n grows, leaving **φⁿ⁺¹ / φⁿ = φ**
-- **Fₙ₊₁ / Fₙ → φ**. The Scene 2 chart flashes in, its dots settling on the φ line, now with a ✓.
+- The ψ terms dim, each with a small blue "→ 0" note, leaving **φⁿ⁺¹ / φⁿ = φ**
+- **Fₙ₊₁ / Fₙ → φ** is boxed, and the chart gets a ✓ on "approaches the golden ratio".
 
 **Narration:**
 > And that finally proves what we saw before. Divide one term by the one before it: the psi parts vanish, and what's left is phi to the n plus one over phi to the n, which is phi. The ratio of consecutive Fibonacci numbers approaches the golden ratio, and now we know why.
