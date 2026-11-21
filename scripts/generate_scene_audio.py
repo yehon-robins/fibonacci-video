@@ -41,6 +41,8 @@ SCENES = {
         "This is the golden ratio, written with the Greek letter phi.",
     ],
     "scene3a": [
+        "So the Fibonacci numbers lead us to the golden ratio. But why? "
+        "Let's see how they are related.",
         "To find the hundredth Fibonacci number, we'd have to compute all ninety-nine before it. "
         "Is there a formula that jumps straight to any term?",
         "We start from the rule itself. Moving everything to one side, it says: "
@@ -91,6 +93,39 @@ SCENES = {
         "And that finally proves what we saw before. Divide one term by the one before it: the psi parts vanish, "
         "and what's left is phi to the n plus one over phi to the n, which is phi. "
         "The ratio of consecutive Fibonacci numbers approaches the golden ratio, and now we know why.",
+    ],
+    "scene4a": [
+        "Count the petals on a flower, and you'll often land on a Fibonacci number. "
+        "Lilies have three, buttercups five, cosmos eight, many marigolds thirteen, and asters twenty-one.",
+        "Not every flower follows the pattern, but it shows up far more often than chance would suggest. "
+        "So why?",
+    ],
+    "scene4b": [
+        "A sunflower grows its seeds from the centre outward. "
+        "Each new seed appears at a fixed turn from the last one: "
+        "about one hundred thirty-seven and a half degrees.",
+        "That angle is the golden angle: a full turn divided by phi squared. "
+        "Because phi is the most irrational number, the seeds never line up into rows, "
+        "so they pack in with no wasted space. Change the angle even slightly, and gaps appear.",
+        "And look at the spirals that appear. Thirty-four turning one way, fifty-five the other: "
+        "two neighbouring Fibonacci numbers. Pinecones and pineapples show the same thing.",
+    ],
+    "scene4c": [
+        "Now take squares whose sides are Fibonacci numbers and fit them together. "
+        "Each new square makes a bigger rectangle, and its shape gets closer and closer to the golden ratio.",
+        "Draw a quarter circle in each square, and they join into a spiral. "
+        "This is the golden spiral: every quarter turn, it grows by a factor of phi.",
+    ],
+    "scene4d": [
+        "For centuries, artists and architects have treated the golden rectangle as the most pleasing shape, "
+        "and some say it hides in famous buildings and paintings. "
+        "Scientists still debate how much of that is true. "
+        "But it's easy to see why people love the idea of a number that turns up everywhere.",
+    ],
+    "scene4e": [
+        "From a simple rule, adding the last two numbers, comes the golden ratio, "
+        "and from the golden ratio, the patterns in a sunflower. "
+        "One little sequence, from mathematics all the way to nature.",
     ],
 }
 

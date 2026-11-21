@@ -14,8 +14,8 @@
 ### Beat 1.1 — Title (0:00 – 0:04)
 
 **Visual:**
-- Fade in on the empty dark background.
-- The title **"The Fibonacci Sequence"** springs up from slightly below centre, then shrinks and slides to the top of the frame, where it stays as a header.
+- Seamless hand-off from the header clip: Scene 1 opens on the header's last frame (the bold **"Fibonacci Sequence"**, centred, just faded out). The title fades back up in place, cross-fades to the regular weight, and **"The"** slides in from the left to make **"The Fibonacci Sequence"**.
+- The title then shrinks and slides to the top of the frame, where it stays as a header.
 
 **Narration:**
 > This is the Fibonacci sequence.
@@ -193,6 +193,17 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 ---
 
 ### Part 3A — The question (~15 s)
+
+#### Beat 3A.0 — Bridge from Scene 2
+
+**Visual:**
+- Opens on Scene 2's last frame: **φ = (1 + √5) / 2 ≈ 1.6180339…** under the title "The Golden Ratio".
+- φ shrinks and glides to the right (the "≈ 1.618…" fades); the row **1, 1, 2, 3, 5, 8, 13, …** slides in on the left.
+- A dashed amber line links them, with a large amber **?** in the middle. Caption: *"How are they related?"*
+- Everything fades and the title changes to "Why We Want a Formula".
+
+**Narration:**
+> So the Fibonacci numbers lead us to the golden ratio. But why? Let's see how they are related.
 
 #### Beat 3A.1 — Why we want a formula
 
@@ -409,7 +420,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 ### Full narration text (Scene 3)
 
-> To find the hundredth Fibonacci number, we'd have to compute all ninety-nine before it. Is there a formula that jumps straight to any term? We start from the rule itself. Moving everything to one side, it says: a term, minus the two before it, is always zero.
+> So the Fibonacci numbers lead us to the golden ratio. But why? Let's see how they are related. To find the hundredth Fibonacci number, we'd have to compute all ninety-nine before it. Is there a formula that jumps straight to any term? We start from the rule itself. Moving everything to one side, it says: a term, minus the two before it, is always zero.
 >
 > Here's the key idea. Imagine a sequence where each term is the previous one times the same number, lambda. In such a sequence, the ratio between neighbours is always exactly lambda. And we already saw that the Fibonacci ratios are almost constant. So let's guess that the sequence behaves like powers of some number lambda, and ask: which lambda obeys the Fibonacci rule?
 >
@@ -559,7 +570,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 - Three items appear left to right, linked by arrows:
   **1, 1, 2, 3, 5, 8, …**  →  **φ = (1 + √5)/2**  →  (the sunflower, with the golden spiral over it)
 - Under them, faintly: **Fₙ = (φⁿ − ψⁿ) / √5**
-- Everything except the spiral fades. The spiral keeps turning slowly, then the screen fades to black.
+- Everything except the spiral fades. The spiral keeps turning slowly, and **"Thanks for watching!"** fades in below it in amber. Then the screen fades to black.
 
 **Narration:**
 > From a simple rule, adding the last two numbers, comes the golden ratio, and from the golden ratio, the patterns in a sunflower. One little sequence, from mathematics all the way to nature.
