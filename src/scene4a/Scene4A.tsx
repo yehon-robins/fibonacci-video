@@ -1,9 +1,14 @@
 import React from "react";
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
-import { C, clamp, Line, makeBeats, Stage } from "../shared/kit";
+import { C, clamp, Line, Stage } from "../shared/kit";
+import { makeBeatsPadded } from "./beats";
 import timing from "./timing.json";
 
-const T = makeBeats(timing);
+// A one-second lead-in before the narration: 4A opens a new chapter
+// (maths -> nature), so the title, a small subtitle and the flower buds
+// settle in before the voice starts.
+const LEAD = 30;
+const T = makeBeatsPadded(timing, [1.3, 2], LEAD);
 export const SCENE4A_DURATION = T.duration;
 
 // ---------------------------------------------------------------------------
@@ -17,7 +22,8 @@ const Flower: React.FC<{
   cy: number;
   size?: number;
   grey?: boolean;
-}> = ({ petals, opened, cx, cy, size = 78, grey }) => {
+  bud?: number; // 0..1, how far the closed bud has appeared
+}> = ({ petals, opened, cx, cy, size = 78, grey, bud = 1 }) => {
   const core = size * 0.24;
   const len = size - core;
   // Narrower petals the more there are, so they don't overlap too much.
@@ -36,7 +42,7 @@ const Flower: React.FC<{
           </g>
         );
       })}
-      <circle r={core * Math.min(1, opened + 0.3)} fill={grey ? C.muted : "#d97706"} stroke={stroke} strokeWidth={2.5} />
+      <circle r={core * Math.min(1, opened + 0.3) * bud} fill={grey ? C.muted : "#d97706"} stroke={stroke} strokeWidth={2.5} />
     </g>
   );
 };
@@ -46,11 +52,12 @@ const Flower: React.FC<{
 // ---------------------------------------------------------------------------
 
 const FLOWERS = [
-  { petals: 3, name: "lily", start: 0.4, end: 0.5 },
-  { petals: 5, name: "buttercup", start: 0.5, end: 0.6 },
-  { petals: 8, name: "cosmos", start: 0.59, end: 0.7 },
-  { petals: 13, name: "marigold", start: 0.69, end: 0.83 },
-  { petals: 21, name: "aster", start: 0.82, end: 0.97 },
+  // Each count finishes as its number is spoken.
+  { petals: 3, name: "lily", start: 0.41, end: 0.49 },
+  { petals: 5, name: "buttercup", start: 0.52, end: 0.61 },
+  { petals: 8, name: "cosmos", start: 0.62, end: 0.72 },
+  { petals: 13, name: "marigold", start: 0.73, end: 0.85 },
+  { petals: 21, name: "aster", start: 0.86, end: 0.98 },
 ];
 const FLOWER_Y = 270;
 const xBefore = (k: number) => 160 + k * 240;
@@ -69,7 +76,12 @@ export const Scene4A: React.FC = () => {
   const shift = spring({ frame: frame - cue(1, 0.05), fps, config: { damping: 200 }, durationInFrames: 30 });
   const grey = interpolate(frame, [cue(1, 0.12), cue(1, 0.12) + 30], [0, 4], clamp);
   const greyFade = interpolate(frame, [cue(1, 0.12), cue(1, 0.12) + 10], [0, 1], clamp);
-  const rowIn = interpolate(frame, [S[0], S[0] + 20], [0, 1], clamp);
+  // The Fibonacci row arrives, left to right, on "a Fibonacci number".
+  const rowIn = (i: number) =>
+    interpolate(frame, [cue(0, 0.17) + i * 3, cue(0, 0.17) + i * 3 + 15], [0, 1], clamp);
+  // Closed buds appear one by one during the lead-in.
+  const bud = (k: number) =>
+    spring({ frame: frame - (8 + k * 5), fps, config: { damping: 200 }, durationInFrames: 20 });
 
   const opened = (k: number) =>
     interpolate(frame, [cue(0, FLOWERS[k].start), cue(0, FLOWERS[k].end)], [0, FLOWERS[k].petals], clamp);
@@ -77,12 +89,16 @@ export const Scene4A: React.FC = () => {
 
   return (
     <Stage title="Fibonacci in Flowers" timing={timing} S={S}>
+      <Line at={12} out={cue(0, 0.3)} y={112} size={28} color={C.muted} style={{ fontStyle: "italic" }}>
+        from numbers to nature
+      </Line>
       <svg width={1280} height={720} style={{ position: "absolute", left: 0, top: 0 }}>
         {FLOWERS.map((f, k) => (
           <Flower
             key={k}
             petals={f.petals}
             opened={opened(k)}
+            bud={bud(k)}
             cx={interpolate(shift, [0, 1], [xBefore(k), xAfter(k)])}
             cy={FLOWER_Y}
           />
@@ -114,7 +130,7 @@ export const Scene4A: React.FC = () => {
                 color: done(k) ? C.amber : C.text,
               }}
             >
-              {Math.floor(n)}
+              {Math.max(1, Math.floor(n))}
             </div>
             <div
               style={{
@@ -187,7 +203,7 @@ export const Scene4A: React.FC = () => {
               transform: `translateY(-50%) scale(${1 + 0.2 * lit})`,
               fontSize: 34,
               color: lit > 0.5 ? C.amber : C.muted,
-              opacity: rowIn,
+              opacity: rowIn(i),
             }}
           >
             {v}
@@ -199,7 +215,7 @@ export const Scene4A: React.FC = () => {
       <Line at={cue(1, 0.1)} y={540} size={36} color={C.muted} style={{ fontStyle: "italic" }}>
         often, not always
       </Line>
-      <Line at={cue(1, 0.82)} y={160} size={40} color={C.amber}>
+      <Line at={cue(1, 0.87)} y={150} size={48} color={C.amber}>
         Why?
       </Line>
     </Stage>
