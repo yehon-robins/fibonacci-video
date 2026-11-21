@@ -219,7 +219,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 
 **Visual:**
 - The rule appears: **Fₙ = Fₙ₋₁ + Fₙ₋₂**
-- The two right-hand terms slide across the equals sign and flip signs: **Fₙ − Fₙ₋₁ − Fₙ₋₂ = 0**
+- The two right-hand terms turn amber (they are the ones that move) and reappear on the left with minus signs: **Fₙ − Fₙ₋₁ − Fₙ₋₂ = 0**. The **0** gets a glowing box on "is always zero".
 
 **Narration:**
 > We start from the rule itself. Moving everything to one side, it says: a term, minus the two before it, is always zero.
@@ -294,6 +294,7 @@ The proof connects the golden ratio to the sequence three times. Each one gets i
 **Visual:**
 - **φ** gets a glowing amber box. The Scene 2 label "φ ≈ 1.618…" flies in and lands on it, matching.
 - A small note appears under ψ: ψ = −1/φ
+- On "The rule itself demands it", the quadratic λ² − λ − 1 = 0 at the top gets a glowing amber box.
 
 **Narration:**
 > Look at the first one: it's the golden ratio. The Fibonacci rule allows only two constant ratios, phi and its partner, psi. The golden ratio wasn't a coincidence. The rule itself demands it.

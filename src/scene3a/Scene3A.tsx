@@ -1,9 +1,10 @@
 import React from "react";
-import { interpolate, spring, useCurrentFrame, useVideoConfig, Easing } from "remotion";
-import { C, clamp, ease, F, Line, makeBeats, Op, Phi, Root, Frac, Stage } from "../shared/kit";
+import { interpolate, interpolateColors, spring, useCurrentFrame, useVideoConfig, Easing } from "remotion";
+import { Boxed, C, clamp, ease, F, Line, makeBeats, Op, Phi, Root, Frac, Stage } from "../shared/kit";
 import timing from "./timing.json";
 
-const T = makeBeats(timing);
+// Slightly tighter gaps than the kit default so pauses stay under ~1.5 s.
+const T = makeBeats(timing, 1.1, 1.6);
 export const SCENE3A_DURATION = T.duration;
 
 // First 40 Fibonacci numbers for the scrolling row.
@@ -25,7 +26,7 @@ const ScrollingRow: React.FC = () => {
   const t = interpolate(frame, [start, end], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
   const shift = t * (POS[POS.length - 1] - 900);
   const opacity =
-    interpolate(frame, [T.B[1], T.B[1] + 12], [0, 1], clamp) *
+    interpolate(frame, [T.B[1] + 4, T.B[1] + 16], [0, 1], clamp) *
     interpolate(frame, [end - 10, end + 8], [1, 0], clamp);
   return (
     <div
@@ -65,11 +66,11 @@ const Bridge: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { B, cue } = T;
-  const out = interpolate(frame, [B[1] - 4, B[1] + 12], [1, 0], clamp);
+  const out = interpolate(frame, [B[1] - 12, B[1] + 3], [1, 0], clamp);
   if (out <= 0) return null;
 
   // Scene 2's title, cross-fading into this part's title (Stage, at B[1]).
-  const oldTitle = interpolate(frame, [B[1] - 10, B[1] + 5], [1, 0], clamp);
+  const oldTitle = interpolate(frame, [B[1] - 12, B[1] + 3], [1, 0], clamp);
 
   // φ glides from Scene 2's centre position to the right. The "≈ 1.618…" part
   // fades out but keeps its space, so the line centre is chosen to put the
@@ -195,6 +196,11 @@ const Bridge: React.FC = () => {
 
 export const Scene3A: React.FC = () => {
   const { S, B, cue } = T;
+  const frame = useCurrentFrame();
+  // "Moving everything to one side": the two right-hand terms light up amber,
+  // then reappear (amber, with minus signs) on the left of the new line.
+  const moveColor = interpolateColors(frame, [cue(2, 0.3), cue(2, 0.3) + 12], [C.text, C.amber]);
+  const zero = interpolate(frame, [cue(2, 0.88), cue(2, 0.88) + 12], [0, 1], clamp);
   return (
     <Stage title="Why We Want a Formula" timing={timing} S={S} titleAt={B[1]}>
       {/* Beat 0: bridge from Scene 2 */}
@@ -205,20 +211,23 @@ export const Scene3A: React.FC = () => {
       <Line at={cue(1, 0.08)} out={cue(1, 0.6)} y={240} size={64}>
         <F s="100" /> <Op>=</Op> <span style={{ color: C.amber }}>?</span>
       </Line>
-      <Line at={cue(1, 0.66)} out={B[2]} y={380} size={110}>
+      <Line at={cue(1, 0.62)} out={B[2] - 12} y={380} size={110}>
         <F s="n" /> <Op>=</Op> <span style={{ color: C.amber }}>?</span>
       </Line>
 
       {/* Beat 2: the rule as an equation */}
-      <Line at={S[2]} y={300} size={70}>
-        <F s="n" /> <Op>=</Op> <F s="n−1" /> <Op>+</Op> <F s="n−2" />
+      <Line at={S[2]} y={290} size={70}>
+        <F s="n" /> <Op>=</Op> <F s="n−1" color={moveColor} /> <Op>+</Op> <F s="n−2" color={moveColor} />
       </Line>
-      <Line at={cue(2, 0.3)} y={380} size={40} color={C.muted}>
-        ⇣
+      <Line at={cue(2, 0.34)} y={380} size={64} color={C.muted}>
+        ↓
       </Line>
-      <Line at={cue(2, 0.35)} y={460} size={70}>
+      <Line at={cue(2, 0.4)} y={470} size={70}>
         <F s="n" /> <Op color={C.amber}>−</Op> <F s="n−1" color={C.amber} /> <Op color={C.amber}>−</Op>{" "}
-        <F s="n−2" color={C.amber} /> <Op>=</Op> 0
+        <F s="n−2" color={C.amber} /> <Op>=</Op>{" "}
+        <Boxed show={zero} glow>
+          0
+        </Boxed>
       </Line>
     </Stage>
   );
