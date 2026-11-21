@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, interpolateColors, spring, useCurrentFrame, useVideoConfig, Easing } from "remotion";
-import { Boxed, C, clamp, ease, F, Line, makeBeats, Op, Phi, Root, Frac, Stage } from "../shared/kit";
+import { Boxed, C, clamp, ease, F, Line, makeBeats, Op, Stage } from "../shared/kit";
 import timing from "./timing.json";
 
 // Slightly tighter gaps than the kit default so pauses stay under ~1.5 s.
@@ -117,10 +117,25 @@ const Bridge: React.FC = () => {
           transform: `translateY(-50%) scale(${phiScale})`,
         }}
       >
-        <Phi />
+        {/* Same markup as Scene 2's PhiLabel, so the first frame matches it exactly */}
+        <span style={{ display: "inline-block", color: C.amber, fontStyle: "italic" }}>φ</span>
         <span style={{ margin: "0 18px" }}>=</span>
-        <span style={{ fontSize: 54 / 76 / 0.8 + "em" }}>
-          <Frac n={<span>1 + <Root>5</Root></span>} d="2" />
+        <span
+          style={{
+            display: "inline-flex",
+            flexDirection: "column",
+            alignItems: "center",
+            verticalAlign: "middle",
+            fontSize: 54,
+            lineHeight: 1.15,
+            margin: "0 10px",
+          }}
+        >
+          <span style={{ padding: "0 8px" }}>
+            1 + √<span style={{ borderTop: `3px solid ${C.text}`, paddingTop: 2 }}>5</span>
+          </span>
+          <span style={{ alignSelf: "stretch", height: 4, background: C.text, borderRadius: 2 }} />
+          <span>2</span>
         </span>
         <span style={{ opacity: approx }}>
           <span style={{ margin: "0 18px", color: C.muted }}>≈</span>
