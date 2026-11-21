@@ -69,8 +69,9 @@ export const Stage: React.FC<{
   title: string;
   timing: Timing;
   S: number[];
+  titleAt?: number;
   children: React.ReactNode;
-}> = ({ title, timing, S, children }) => {
+}> = ({ title, timing, S, titleAt = 0, children }) => {
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: SERIF, color: C.text }}>
@@ -89,7 +90,7 @@ export const Stage: React.FC<{
           transform: "translateY(-50%)",
           fontSize: 44,
           color: C.amber,
-          opacity: fade(frame, 0, undefined, 15),
+          opacity: fade(frame, titleAt, undefined, 15),
         }}
       >
         {title}

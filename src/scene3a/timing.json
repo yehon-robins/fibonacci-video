@@ -1,10 +1,14 @@
 [
   {
     "file": "scene3a/beat1.wav",
-    "seconds": 8.043
+    "seconds": 5.717
   },
   {
     "file": "scene3a/beat2.wav",
+    "seconds": 8.043
+  },
+  {
+    "file": "scene3a/beat3.wav",
     "seconds": 7.317
   }
 ]

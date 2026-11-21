@@ -116,10 +116,25 @@ const pairCenter = (p: number) => (slotX(p) + slotX(p + 1)) / 2;
 // Components
 // ---------------------------------------------------------------------------
 
+// The header clip ends on a bold "Fibonacci Sequence" (96px, centred) fading
+// out over its last 15 frames. Scene 1 opens on that exact frame, brings the
+// title back up, cross-fades it to the regular weight and slides "The" in, so
+// the cut from the header is invisible.
+const HEADER_END_OPACITY = 1 / 15;
+const THE_WIDTH = 214; // rendered width of "The " at 96px
+// "Fibonacci Sequence" is 1067px wide in bold and 977px in regular weight.
+// Squeezing/stretching the layers during the cross-fade keeps them aligned.
+const WEIGHT_RATIO = 977 / 1067;
+
 const Title: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const enter = spring({ frame: frame - 5, fps, config: { damping: 200 } });
+  const back = interpolate(frame, [0, 12], [HEADER_END_OPACITY, 1], {
+    ...clamp,
+    easing: Easing.out(Easing.quad),
+  });
+  const toRegular = interpolate(frame, [12, 26], [0, 1], { ...clamp, easing: Easing.inOut(Easing.quad) });
+  const the = interpolate(frame, [22, 44], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const toTop = spring({
     frame: frame - (BEAT_START[1] - 25),
     fps,
@@ -128,23 +143,57 @@ const Title: React.FC = () => {
   });
   const y = interpolate(toTop, [0, 1], [360, 70]);
   const scale = interpolate(toTop, [0, 1], [1, 0.5]);
+  const layer: React.CSSProperties = {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: y,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    whiteSpace: "nowrap",
+    transform: `translateY(-50%) scale(${scale})`,
+    fontFamily: SERIF,
+    fontSize: 96,
+    color: AMBER,
+  };
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        right: 0,
-        top: y,
-        textAlign: "center",
-        transform: `translateY(-50%) translateY(${(1 - enter) * 40}px) scale(${scale})`,
-        opacity: enter,
-        fontFamily: SERIF,
-        fontSize: 96,
-        color: AMBER,
-      }}
-    >
-      The Fibonacci Sequence
-    </div>
+    <>
+      {toRegular < 1 ? (
+        <div
+          style={{
+            ...layer,
+            fontFamily: "Georgia, serif",
+            fontWeight: "bold",
+            opacity: back * (1 - toRegular),
+            transform: `${layer.transform} scaleX(${interpolate(toRegular, [0, 1], [1, WEIGHT_RATIO])})`,
+          }}
+        >
+          Fibonacci Sequence
+        </div>
+      ) : null}
+      <div
+        style={{
+          ...layer,
+          opacity: toRegular,
+          transform: `${layer.transform} scaleX(${interpolate(toRegular, [0, 1], [1 / WEIGHT_RATIO, 1])})`,
+        }}
+      >
+        {/* "The" is revealed from its right edge, as if sliding out from behind the F */}
+        <span
+          style={{
+            width: THE_WIDTH * the,
+            overflow: "hidden",
+            display: "flex",
+            justifyContent: "flex-end",
+            opacity: the,
+          }}
+        >
+          <span style={{ flexShrink: 0 }}>The&nbsp;</span>
+        </span>
+        <span>Fibonacci Sequence</span>
+      </div>
+    </>
   );
 };
 
