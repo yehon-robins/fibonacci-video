@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, clamp, ease, Line, makeBeats, Phi, PHI, Stage } from "../shared/kit";
+import { C, clamp, ease, FPS, Line, makeBeats, Op, Phi, PHI, Stage } from "../shared/kit";
 import timing from "./timing.json";
 
 const T = makeBeats(timing);
@@ -40,21 +40,27 @@ const Card: React.FC = () => (
     <line x1={-62} y1={34} x2={0} y2={34} strokeWidth={2} />
   </g>
 );
+// Times are seconds into the narration, matched to the words they illustrate.
 const ICONS = [
-  { el: <Temple />, x: 360, at: 0.12 },
-  { el: <Painting />, x: 640, at: 0.18 },
-  { el: <Card />, x: 920, at: 0.24 },
+  { el: <Temple />, x: 360, at: 6.4 }, // "famous buildings"
+  { el: <Painting />, x: 640, at: 7.5 }, // "and paintings"
+  { el: <Card />, x: 920, at: 8.1 },
 ];
 const ICON_Y = 500;
 
 export const Scene4D: React.FC = () => {
   const frame = useCurrentFrame();
-  const { S, cue } = T;
-  const draw = interpolate(frame, [S[0], S[0] + 35], [0, 1], ease);
-  const split = interpolate(frame, [S[0] + 35, S[0] + 55], [0, 1], ease);
-  const labels = interpolate(frame, [S[0] + 25, S[0] + 40], [0, 1], clamp);
-  const dim = interpolate(frame, [cue(0, 0.5), cue(0, 0.5) + 15], [1, 0.35], clamp);
-  const glow = interpolate(frame, [cue(0, 0.78), cue(0, 0.78) + 20], [0, 1], clamp);
+  const { S } = T;
+  const at = (sec: number) => S[0] + Math.round(sec * FPS);
+  // "artists and architects have treated the golden rectangle"
+  const draw = interpolate(frame, [at(0.8), at(3.3)], [0, 1], ease);
+  const labels = interpolate(frame, [at(2.9), at(3.4)], [0, 1], clamp);
+  const split = interpolate(frame, [at(3.4), at(4.1)], [0, 1], ease);
+  // "Scientists still debate..."
+  const dim = interpolate(frame, [at(8.9), at(9.4)], [1, 0.35], clamp);
+  // "...people love the idea of a number that turns up everywhere"
+  const glow = interpolate(frame, [at(12.1), at(12.8)], [0, 1], clamp);
+  const number = interpolate(frame, [at(14.5), at(15.0)], [0, 1], clamp);
 
   return (
     <Stage title="The Golden Ratio and Beauty" timing={timing} S={S}>
@@ -64,7 +70,7 @@ export const Scene4D: React.FC = () => {
           y={RY}
           width={RW}
           height={RH}
-          fill={`rgba(251, 191, 36, ${0.04 + 0.1 * glow})`}
+          fill={`rgba(251, 191, 36, ${0.04 * draw + 0.1 * glow})`}
           stroke={C.amber}
           strokeWidth={4}
           pathLength={1}
@@ -79,12 +85,12 @@ export const Scene4D: React.FC = () => {
           x2={RX + RH}
           y2={RY + RH * split}
           stroke={C.amber}
-          strokeOpacity={0.5}
+          strokeOpacity={0.5 * (1 - number)}
           strokeWidth={2}
           strokeDasharray="8 8"
         />
         {ICONS.map((ic, k) => {
-          const o = interpolate(frame, [cue(0, ic.at), cue(0, ic.at) + 15], [0, 1], clamp);
+          const o = interpolate(frame, [at(ic.at), at(ic.at) + 15], [0, 1], clamp);
           return (
             <g key={k} transform={`translate(${ic.x} ${ICON_Y + (1 - o) * 15})`} opacity={o * 0.85 * dim}>
               {ic.el}
@@ -120,10 +126,25 @@ export const Scene4D: React.FC = () => {
       >
         <Phi />
       </div>
-      <Line at={cue(0, 0.3)} y={615} size={38} style={{ fontStyle: "italic" }}>
+      {/* The number itself, shown as the narration names it */}
+      <div
+        style={{
+          position: "absolute",
+          left: RX,
+          width: RW,
+          top: RY + RH / 2,
+          textAlign: "center",
+          transform: `translateY(-50%) scale(${0.9 + 0.1 * number})`,
+          fontSize: 42,
+          opacity: number,
+        }}
+      >
+        <Phi /> <Op>≈</Op> 1.618…
+      </div>
+      <Line at={at(4.2)} y={615} size={38} style={{ fontStyle: "italic" }}>
         pleasing proportions?
       </Line>
-      <Line at={cue(0, 0.52)} y={665} size={26} color={C.muted}>
+      <Line at={at(9.0)} y={665} size={26} color={C.muted}>
         still debated: studies give mixed results
       </Line>
     </Stage>
