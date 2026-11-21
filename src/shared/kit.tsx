@@ -65,14 +65,28 @@ export const fade = (frame: number, at: number, out?: number, dur = 12) => {
 // Stage
 // ---------------------------------------------------------------------------
 
+/** Frames over which a part fades to the empty background at its end. */
+export const END_FADE = 15;
+
+/**
+ * Scene convention for clean hand-offs between parts: every part starts on the
+ * empty background (the title fades in) and, unless `fadeOut` is false, fades
+ * everything (title included) back to the empty background over its last
+ * END_FADE frames.
+ */
 export const Stage: React.FC<{
   title: string;
   timing: Timing;
   S: number[];
   titleAt?: number;
+  fadeOut?: boolean;
   children: React.ReactNode;
-}> = ({ title, timing, S, titleAt = 0, children }) => {
+}> = ({ title, timing, S, titleAt = 0, fadeOut = true, children }) => {
   const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const end = fadeOut
+    ? interpolate(frame, [durationInFrames - END_FADE, durationInFrames - 1], [1, 0], clamp)
+    : 1;
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: SERIF, color: C.text }}>
       {timing.map((t, i) => (
@@ -90,12 +104,12 @@ export const Stage: React.FC<{
           transform: "translateY(-50%)",
           fontSize: 44,
           color: C.amber,
-          opacity: fade(frame, titleAt, undefined, 15),
+          opacity: fade(frame, titleAt, undefined, 15) * end,
         }}
       >
         {title}
       </div>
-      {children}
+      <AbsoluteFill style={{ opacity: end }}>{children}</AbsoluteFill>
     </AbsoluteFill>
   );
 };

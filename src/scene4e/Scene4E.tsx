@@ -46,7 +46,7 @@ export const Scene4E: React.FC = () => {
   });
 
   return (
-    <Stage title="From Numbers to Nature" timing={timing} S={S}>
+    <Stage title="From Numbers to Nature" timing={timing} S={S} fadeOut={false}>
       <div style={{ opacity: others }}>
         <Line at={S[0]} x={190} y={ITEM_Y} size={34}>
           1, 1, 2, 3, 5, 8, …
