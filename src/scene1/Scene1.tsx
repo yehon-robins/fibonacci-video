@@ -20,8 +20,9 @@ export const SCENE1_FPS = 30;
 const SPEECH_DELAY = 10; // frames between beat start and narration start
 
 // Minimum on-screen length and padding after speech for each beat (seconds).
-const BEAT_MIN = [4, 4, 7, 6, 5.5, 6];
-const BEAT_PAD = [1.2, 1.2, 1.3, 1.8, 2, 2.5];
+// Kept tight so the narration never pauses for much more than ~1.5 s.
+const BEAT_MIN = [3.3, 3.6, 6.5, 5.6, 4.6, 4.6];
+const BEAT_PAD = [1.2, 1.2, 1.0, 1.5, 1.2, 1.2];
 
 const BEAT_FRAMES = timing.map((t, i) =>
   Math.ceil(Math.max(BEAT_MIN[i], t.seconds + BEAT_PAD[i]) * SCENE1_FPS),
@@ -84,7 +85,9 @@ const camera = (frame: number) => {
   for (let i = 2; i < TERMS.length; i++) {
     visible += interpolate(
       frame,
-      [TERMS[i].appear - 12, TERMS[i].appear + 18],
+      // Start widening before the arcs begin to draw, so their tips never
+      // reach past the right edge of the frame.
+      [TERMS[i].appear - TERMS[i].arcLead - 8, TERMS[i].appear + 8],
       [0, 1],
       { ...clamp, easing: Easing.inOut(Easing.cubic) },
     );
@@ -105,10 +108,10 @@ const camera = (frame: number) => {
 // Pairs highlighted in beat 5 (index of left element) and when the box hops.
 const PAIR_STOPS = [
   { pair: 6, at: S[4] + 0 }, // 13, 21
-  { pair: 5, at: S[4] + 40 }, // 8, 13
-  { pair: 8, at: S[4] + 70 }, // 34, 55
-  { pair: 9, at: S[4] + 100 }, // 55, 89
-  { pair: 6, at: S[4] + 130 }, // back to 13, 21
+  { pair: 5, at: S[4] + 28 }, // 8, 13
+  { pair: 8, at: S[4] + 50 }, // 34, 55
+  { pair: 9, at: S[4] + 72 }, // 55, 89
+  { pair: 6, at: S[4] + 94 }, // back to 13, 21 (settled before beat 6)
 ];
 const pairCenter = (p: number) => (slotX(p) + slotX(p + 1)) / 2;
 
@@ -420,7 +423,11 @@ const Question: React.FC = () => {
   const move = spring({ frame: frame - start - 5, fps, config: { damping: 200 }, durationInFrames: 35 });
   const morph = interpolate(frame, [start + 40, start + 58], [0, 1], clamp);
   const q = spring({ frame: frame - (start + 70), fps, config: { damping: 10, stiffness: 120 } });
-  const pulse = 1 + 0.04 * Math.sin(Math.max(0, frame - start - 90) / 8);
+  // Gentle breathing pulse, faded back to exactly 1 for the final frame so
+  // Scene 2 can open on an identical, static "?".
+  const end = SCENE1_DURATION - 1;
+  const pulseAmp = interpolate(frame, [start + 85, start + 100, end - 18, end], [0, 1, 1, 0], clamp);
+  const pulse = 1 + 0.04 * pulseAmp * Math.sin(Math.max(0, frame - start - 85) / 8);
 
   const fromSize = NUM_SIZE * cam.scale;
   const toSize = 120;

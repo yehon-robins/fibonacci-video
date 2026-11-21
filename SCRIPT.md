@@ -9,7 +9,7 @@
 
 **Goal:** Introduce the Fibonacci sequence, show that each term is the sum of the two before it, and end on an open question: *what can we say about two consecutive terms?*
 
-**Estimated length:** ~35 seconds
+**Estimated length:** ~28 seconds (853 frames; beat lengths follow the narration audio)
 
 ### Beat 1.1 — Title (0:00 – 0:04)
 
@@ -108,7 +108,7 @@ For feeding to `scripts/generate_audio.py`:
 
 **Goal:** Answer Scene 1's question by showing, numerically, that the ratio of consecutive terms approaches the golden ratio φ, and name it. The rigorous proof is left for Scene 3.
 
-**Estimated length:** ~19 seconds (kept short so it's easy to review and edit)
+**Estimated length:** ~17.5 seconds (527 frames; kept short so it's easy to review and edit)
 
 ### Beat 2.1 — From pair to ratio (0:00 – 0:05)
 
@@ -148,12 +148,12 @@ For feeding to `scripts/generate_audio.py`:
 ### Beat 2.3 — Name it: φ (0:14 – 0:19)
 
 **Visual:**
-- The table and chart fade back. The dashed line's label grows and moves to centre:
+- The title fades from "The Fibonacci Sequence" to "The Golden Ratio". The table and chart fade away completely. The dashed line's label **1.618…** grows and glides into place, its digits landing exactly where the final decimal sits; it gains more digits while the rest of the formula fades in around it:
 
   **φ = (1 + √5) / 2 ≈ 1.6180339…**
 
-- The **φ** symbol is in amber.
-- Hold for ~1 second, then cut to Scene 3.
+- The **φ** symbol is in amber, and glows briefly as the narration says "phi".
+- Hold the final layout (title + formula only) for ~1 second, then cut to Scene 3A, which opens on exactly this frame.
 
 **Narration:**
 > This is the golden ratio, written with the Greek letter phi.
