@@ -19,7 +19,8 @@ import {
 } from "../shared/kit";
 import timing from "./timing.json";
 
-const T = makeBeats(timing);
+// Slightly tighter gaps than the kit default so pauses stay under ~1.5 s.
+const T = makeBeats(timing, 1.1, 1.6);
 export const SCENE3B_DURATION = T.duration;
 
 const TERMS: React.ReactNode[] = [
@@ -31,14 +32,14 @@ const TERMS: React.ReactNode[] = [
   "…",
 ];
 const termX = (i: number) => 265 + i * 150;
-const ROW_Y = 410;
+const ROW_Y = 380;
 const termAt = (i: number) => T.cue(0, 0.15 + i * 0.07);
 
 // Beat 1: 1, λ, λ², … with a "× λ" hop between every pair of neighbours.
 const PowerRow: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const out = interpolate(frame, [T.B[1], T.B[1] + 15], [1, 0], clamp);
+  const out = interpolate(frame, [T.B[1] - 12, T.B[1] + 2], [1, 0], clamp);
   return (
     <div style={{ opacity: out }}>
       <svg width={1280} height={720} style={{ position: "absolute", left: 0, top: 0 }}>
@@ -92,15 +93,15 @@ export const Scene3B: React.FC = () => {
   const { S, B, cue } = T;
   const frame = useCurrentFrame();
   const insets = interpolate(frame, [S[1], S[1] + 15], [0, 1], clamp);
-  const right = interpolate(frame, [cue(1, 0.12), cue(1, 0.12) + 15], [0, 1], clamp);
+  const right = interpolate(frame, [cue(1, 0.22), cue(1, 0.22) + 15], [0, 1], clamp);
   return (
     <Stage title="The Guess" timing={timing} S={S}>
       {/* Beat 1 */}
       <PowerRow />
-      <Line at={cue(0, 0.6)} out={B[1]} y={560} size={60}>
+      <Line at={cue(0, 0.7)} out={B[1] - 12} y={535} size={60}>
         <Frac n={<span><Lam /><Sup>n+1</Sup></span>} d={<span><Lam /><Sup>n</Sup></span>} />
         <Op>=</Op>
-        <Boxed show={interpolate(frame, [cue(0, 0.8), cue(0, 0.8) + 12], [0, 1], clamp)}>
+        <Boxed show={interpolate(frame, [cue(0, 0.92), cue(0, 0.92) + 12], [0, 1], clamp)} glow>
           <Lam />
         </Boxed>
       </Line>
@@ -111,7 +112,7 @@ export const Scene3B: React.FC = () => {
       </div>
       <div style={{ position: "absolute", left: 750, top: 150, opacity: right }}>
         <MiniChart
-          at={cue(1, 0.12)}
+          at={cue(1, 0.22)}
           values={Array(9).fill(PHI)}
           caption={<span><Lam /><Sup>n</Sup>: ratio exactly constant</span>}
         />
@@ -121,11 +122,23 @@ export const Scene3B: React.FC = () => {
           <span style={{ color: C.amber }}>Guess:</span> <F s="n" /> <Op>=</Op> <Lam />
           <Sup>n</Sup>
         </Boxed>
-        <span style={{ fontSize: "0.5em", color: C.muted, marginLeft: "0.6em" }}>
-          (<Lam /> ≠ 0)
+        {/* Absolutely placed so the boxed guess itself stays centred. */}
+        <span style={{ position: "relative" }}>
+          <span
+            style={{
+              position: "absolute",
+              left: "0.6em",
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: "0.5em",
+              color: C.muted,
+            }}
+          >
+            (<Lam /> ≠ 0)
+          </span>
         </span>
       </Line>
-      <Line at={cue(1, 0.72)} y={640} size={38} color={C.muted}>
+      <Line at={cue(1, 0.75)} y={640} size={38} color={C.muted}>
         Which <Lam /> obeys <F s="n" /> = <F s="n−1" /> + <F s="n−2" /> ?
       </Line>
     </Stage>
