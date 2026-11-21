@@ -3,8 +3,12 @@ import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { Annot, C, clamp, ease, F, I, Line, makeBeats, Op, Phi, Psi, Stage, Sup } from "../shared/kit";
 import timing from "./timing.json";
 
-const T = makeBeats(timing);
+// Slightly tighter than the default gaps so the pause between beats stays under ~1.5 s.
+const T = makeBeats(timing, 1.1, 1.8);
 export const SCENE3D_DURATION = T.duration;
+
+// "Once the first two terms are fixed" in beat 3.
+const FIXED_AT = T.cue(2, 0.3);
 
 // ---------------------------------------------------------------------------
 // Beat 1: table of φⁿ and ψⁿ
@@ -58,9 +62,12 @@ const TableRow: React.FC<{
 };
 
 // A small slider "knob" drawn under A and B.
+// The knobs wiggle while we talk about tuning, then settle once the first two
+// terms are fixed, so nothing is still moving when the part fades out.
 const Knob: React.FC<{ phase: number }> = ({ phase }) => {
   const frame = useCurrentFrame();
-  const pos = 0.5 + 0.4 * Math.sin(frame / 14 + phase);
+  const settle = interpolate(frame, [FIXED_AT - 20, FIXED_AT + 10], [1, 0], ease);
+  const pos = 0.5 + 0.4 * Math.sin(frame / 14 + phase) * settle;
   return (
     <svg width={90} height={30} style={{ display: "block" }}>
       <line x1={8} x2={82} y1={15} y2={15} stroke={C.muted} strokeWidth={4} strokeLinecap="round" />
@@ -74,10 +81,11 @@ const Cascade: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const { cue, B } = T;
-  const enter = interpolate(frame, [B[2], B[2] + 15], [0, 1], clamp);
+  // Wait for beat 2's working to clear before the boxes come in.
+  const enter = interpolate(frame, [B[2] + 10, B[2] + 25], [0, 1], clamp);
   const x = (j: number) => 220 + j * 120;
   const y = 430;
-  const litAt = (j: number) => (j < 2 ? cue(2, 0.22) : cue(2, 0.42) + (j - 2) * 9);
+  const litAt = (j: number) => (j < 2 ? FIXED_AT : cue(2, 0.47) + (j - 2) * 9);
   return (
     <div style={{ opacity: enter }}>
       <svg width={1280} height={720} style={{ position: "absolute", left: 0, top: 0 }}>
@@ -91,7 +99,7 @@ const Cascade: React.FC = () => {
                 d={`M ${x(k)} ${y - 50} Q ${(x(k) + x(j)) / 2} ${y - 50 - h} ${x(j)} ${y - 52}`}
                 fill="none"
                 stroke={C.amber}
-                strokeOpacity={0.7}
+                strokeOpacity={d > 0 ? 0.7 : 0}
                 strokeWidth={2.5}
                 pathLength={1}
                 strokeDasharray={1}
@@ -136,11 +144,43 @@ const Cascade: React.FC = () => {
           textAlign: "center",
           fontSize: 26,
           color: C.amber,
-          opacity: interpolate(frame, [cue(2, 0.22), cue(2, 0.22) + 12], [0, 1], clamp),
+          opacity: interpolate(frame, [FIXED_AT, FIXED_AT + 12], [0, 1], clamp),
         }}
       >
         fixed
       </div>
+    </div>
+  );
+};
+
+// Beat 2: the scaled rules for φⁿ and ψⁿ, stacked with their "=" signs aligned.
+const Amb: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span style={{ color: C.amber }}>{children}</span>
+);
+const MixRows: React.FC<{ rowAt: [number, number] }> = ({ rowAt }) => {
+  const frame = useCurrentFrame();
+  const o = rowAt.map((at) => interpolate(frame, [at, at + 12], [0, 1], clamp));
+  const cell = (row: number, align: "left" | "right" | "center", content: React.ReactNode) => (
+    <span style={{ opacity: o[row], textAlign: align }}>{content}</span>
+  );
+  return (
+    <div
+      style={{
+        display: "inline-grid",
+        gridTemplateColumns: "auto auto auto auto",
+        columnGap: "0.3em",
+        rowGap: "0.25em",
+        alignItems: "baseline",
+      }}
+    >
+      {cell(0, "right", "")}
+      {cell(0, "right", <><Amb>A</Amb>·<Phi /><Sup>n</Sup></>)}
+      {cell(0, "center", "=")}
+      {cell(0, "left", <><Amb>A</Amb>·<Phi /><Sup>n−1</Sup> + <Amb>A</Amb>·<Phi /><Sup>n−2</Sup></>)}
+      {cell(1, "right", <span style={{ color: C.muted }}>+</span>)}
+      {cell(1, "right", <><Amb>B</Amb>·<Psi /><Sup>n</Sup></>)}
+      {cell(1, "center", "=")}
+      {cell(1, "left", <><Amb>B</Amb>·<Psi /><Sup>n−1</Sup> + <Amb>B</Amb>·<Psi /><Sup>n−2</Sup></>)}
     </div>
   );
 };
@@ -175,15 +215,18 @@ export const Scene3D: React.FC = () => {
         out={B[1]}
         highlight={{ at: cue(0, 0.3), color: C.blue }}
       />
-      <Line at={cue(0, 0.2)} out={cue(0, 0.5)} y={460} size={34} color={C.amber}>
+      <Line at={cue(0, 0.2)} out={cue(0, 0.45)} y={460} size={34} color={C.amber}>
         1.618 + 2.618 = 4.236 ✓
       </Line>
-      <Line at={cue(0, 0.3)} out={cue(0, 0.5)} y={515} size={34} color={C.blue}>
+      <Line at={cue(0, 0.3)} out={cue(0, 0.45)} y={515} size={34} color={C.blue}>
         −0.618 + 0.382 = −0.236 ✓
       </Line>
-      <TableRow label={<F s="n" />} values={FIB_ROW} y={520} at={cue(0, 0.55)} out={B[1]} />
-      <Line at={cue(0, 0.58)} out={B[1]} y={440} x={200} size={60} color={C.red}>
+      <TableRow label={<F s="n" />} values={FIB_ROW} y={520} at={cue(0, 0.5)} out={B[1]} />
+      <Line at={cue(0, 0.53)} out={B[1]} y={440} x={200} size={60} color={C.red}>
         ≠
+      </Line>
+      <Line at={cue(0, 0.78)} out={B[1]} y={440} x={706} size={30} color={C.red}>
+        not even whole numbers
       </Line>
 
       {/* Beat 2: any mix A·φⁿ + B·ψⁿ still obeys the rule */}
@@ -192,33 +235,23 @@ export const Scene3D: React.FC = () => {
         <Sup>n</Sup> <Op>+</Op> {AB("B", 2)}·<Psi />
         <Sup>n</Sup>
       </Line>
-      <Line at={cue(1, 0.2)} out={B[2]} y={390} size={38}>
-        <span style={{ color: C.amber }}>A</span>·<Phi />
-        <Sup>n</Sup> = <span style={{ color: C.amber }}>A</span>·<Phi />
-        <Sup>n−1</Sup> + <span style={{ color: C.amber }}>A</span>·<Phi />
-        <Sup>n−2</Sup>
+      <Line at={cue(1, 0.26)} out={B[2]} y={420} size={38}>
+        <MixRows rowAt={[cue(1, 0.26), cue(1, 0.34)]} />
       </Line>
-      <Line at={cue(1, 0.28)} out={B[2]} y={450} size={38}>
-        <span style={{ color: C.muted }}>+ </span>
-        <span style={{ color: C.amber }}>B</span>·<Psi />
-        <Sup>n</Sup> = <span style={{ color: C.amber }}>B</span>·<Psi />
-        <Sup>n−1</Sup> + <span style={{ color: C.amber }}>B</span>·<Psi />
-        <Sup>n−2</Sup>
-      </Line>
-      <Line at={cue(1, 0.36)} out={B[2]} y={490} size={38}>
+      <Line at={cue(1, 0.44)} out={B[2]} y={490} size={38}>
         <div style={{ width: 640, height: 3, background: C.muted, margin: "0 auto" }} />
       </Line>
-      <Line at={cue(1, 0.4)} out={B[2]} y={540} size={34}>
+      <Line at={cue(1, 0.48)} out={B[2]} y={540} size={34}>
         (A<Phi /><Sup>n</Sup> + B<Psi /><Sup>n</Sup>) = (A<Phi /><Sup>n−1</Sup> + B<Psi />
         <Sup>n−1</Sup>) + (A<Phi /><Sup>n−2</Sup> + B<Psi /><Sup>n−2</Sup>)
       </Line>
-      <Line at={cue(1, 0.52)} out={B[2]} y={615} size={34} color={C.green}>
+      <Line at={cue(1, 0.6)} out={B[2]} y={615} size={34} color={C.green}>
         ✓ the mix obeys the rule too
       </Line>
 
       {/* Beat 3: two starting values fix the whole sequence */}
       <Cascade />
-      <Line at={cue(2, 0.7)} y={600} size={38}>
+      <Line at={cue(2, 0.72)} y={600} size={38}>
         match <F s="0" color={C.amber} /> and <F s="1" color={C.amber} /> <Op>⇒</Op> match every <F s="n" />
       </Line>
     </Stage>
